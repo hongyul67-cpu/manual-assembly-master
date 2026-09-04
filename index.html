@@ -2101,13 +2101,24 @@ function symPool(){
   return out;
 }
 
+/* 식구가 셋뿐인 무리는 보기 하나가 모자랍니다.
+   아무 데서나 채우면 생김새가 너무 달라 눈으로도 답이 보이므로, 이웃 무리를 정해 둡니다. */
+const SYMNEIGHBOR = {
+  '펌프 · 모터'   : '에너지원',        /* 둘 다 동그라미 + 삼각형 */
+  '압력 제어 밸브': '유량 제어 밸브',  /* 둘 다 네모 + 관로를 다루는 밸브 */
+};
+
 function makeSymRound(item, dir){
   const mates = SYMGROUP[item.g].filter(x => x !== item.n && SYM[x]);
   let wrong = shuffle(mates).slice(0, 3);
-  if(wrong.length < 3){                      /* 무리가 작으면 다른 무리에서 채웁니다 */
-    const rest = symPool().filter(x => x.n !== item.n && wrong.indexOf(x.n) < 0)
-                          .map(x => x.n);
-    wrong = wrong.concat(shuffle(rest).slice(0, 3 - wrong.length));
+  if(wrong.length < 3){
+    const near = SYMGROUP[SYMNEIGHBOR[item.g]] || [];
+    const pool = near.concat(symPool().map(x => x.n))        /* 이웃 무리를 먼저 씁니다 */
+                     .filter(n => SYM[n] && n !== item.n && wrong.indexOf(n) < 0);
+    const seen = {};
+    shuffle(pool.filter(n => near.indexOf(n) >= 0))
+      .concat(pool.filter(n => near.indexOf(n) < 0))
+      .forEach(n => { if(!seen[n] && wrong.length < 3){ seen[n] = 1; wrong.push(n); } });
   }
   return { dir, name:item.n, group:item.g, ch: shuffle([item.n].concat(wrong)) };
 }
