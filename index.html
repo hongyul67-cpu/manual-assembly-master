@@ -6,6 +6,10 @@
 <title>기계수동조립</title>
 <!-- 수업용 「모두 같은 문제」 — 다른 공용 스크립트보다 먼저 -->
 <script src="https://hongyul67-cpu.github.io/links/fixorder.js"></script>
+<!-- 그림 — 그리는 도구(fig.js)는 links 의 공용 파일, 그림 모음(figs.js)은 이 저장소 것.
+     배우기가 페이지 끝에서 바로 그려지므로 여기(head)에서 먼저 부른다. lesson.js 도 같은 그림을 쓴다 -->
+<script src="https://hongyul67-cpu.github.io/links/fig.js"></script>
+<script src="figs.js"></script>
 <style>
   :root{
     --bg:#f5f6f8; --card:#fff; --line:#e2e5ea; --tx:#1c2430; --dim:#6b7684;
@@ -29,6 +33,7 @@
         padding:16px 18px;margin-bottom:12px}
   .card h3{margin:0 0 8px;font-size:16px}
   .card .body{color:#333}
+  .card .lfig{margin:2px 0 14px}
   .kw{background:#eef4ff;color:#1d4ed8;border-radius:6px;padding:1px 6px;font-weight:700}
   .warnbox{background:#fff8e6;border-left:3px solid var(--warn);border-radius:0 8px 8px 0;
            padding:8px 12px;margin-top:10px;font-size:14px}
@@ -1842,6 +1847,10 @@ function render(view){
 }
 
 /* ── 배우기 ── */
+function learnFigs(title){
+  if(!window.FIG || !window.FIGS) return [];
+  return Object.keys(FIGS).filter(k => (FIGS[k].cards||[]).indexOf(title) >= 0);
+}
 function renderLearn(v){
   /* 선생님용 입구 — 학생용 배우기 카드는 그대로 두고, 같은 내용을 교실 화면용
      슬라이드로 한 벌 더 연다(공용 board-pro.js). 눈에 띄되 학생 흐름은 막지 않게 한 줄. */
@@ -1856,7 +1865,10 @@ function renderLearn(v){
   LEARN.forEach(c=>{
     if(c.unit !== cur){ cur = c.unit;
       v.appendChild(el('<h2 style="font-size:15px;margin:18px 0 8px;color:#2563eb">'+cur+'</h2>')); }
-    const card = el('<div class="card"><h3>'+c.t+'</h3><div class="body">'+(c.body||'')+'</div></div>');
+    /* 그림(figs.js) — 그 카드를 cards 에 적은 그림을 본문 위에. 누르면 크게 */
+    const fk = learnFigs(c.t);
+    const fh = !fk.length ? '' : '<div class="lfig">' + (fk.length > 1 ? FIG.gallery(fk) : FIG.figure(fk[0])) + '</div>';
+    const card = el('<div class="card"><h3>'+c.t+'</h3>'+fh+'<div class="body">'+(c.body||'')+'</div></div>');
     v.appendChild(card);
     if(c.draw){ try{ c.draw(card.querySelector('.body')); }catch(e){ console.warn('draw', e); } }
   });
@@ -1902,7 +1914,13 @@ function openBoard(){
     sub:'요점 → <b>발문</b> → 퀴즈 → 정답을 하나씩 엽니다. 화면 어디든 바로 판서됩니다.<br>'+
         '요점 속 <b>파란 빈칸</b>은 눌러야 답이 보입니다.',
     menu: menu,
-    fig: s => (s.fig && LF[s.fig]) ? LF[s.fig]() : ''
+    /* fig 키가 lesson.js 의 LESSFIG 에 있으면 그것을, 아니면 figs.js(배우기와 같은 그림)를 쓴다.
+       figLabels:false 인 장은 정답이 되는 이름표(ans)를 ? 로 가린다 */
+    fig: s => {
+      if(!s.fig) return '';
+      if(LF[s.fig]) return LF[s.fig]();
+      return (window.FIG && FIG.has(s.fig)) ? FIG.svgOf(s.fig, s.figLabels===false ? {labels:false} : {}) : '';
+    }
   });
 }
 
