@@ -119,11 +119,11 @@
 
   <div class="tabs">
     <button class="tab on" data-view="learn">📖 배우기</button>
-    <button class="tab"    data-view="gauge">📏 눈금 읽기</button>
     <button class="tab"    data-view="tool">🔧 공구 고르기</button>
     <button class="tab"    data-view="order">🧩 조립 순서</button>
-    <button class="tab"    data-view="sym">🔣 기호 고르기</button>
+    <button class="tab"    data-view="gauge">📏 눈금 읽기</button>
     <button class="tab"    data-view="practice">✏️ 연습 8문항</button>
+    <button class="tab"    data-view="sym">🔣 기호 고르기</button>
     <button class="tab"    data-view="exam">🏁 종합시험 20문항</button>
     <button class="tab"    data-view="wrong">📕 오답노트</button>
   </div>
@@ -1873,11 +1873,11 @@ function renderLearn(v){
     if(c.draw){ try{ c.draw(card.querySelector('.body')); }catch(e){ console.warn('draw', e); } }
   });
   v.appendChild(el('<div class="card row"><b>다 읽었으면</b>' +
-    '<button class="btn btn-primary" id="goG">📏 눈금 읽기</button>' +
-    '<button class="btn" id="goT">🔧 공구 고르기</button>' +
+    '<button class="btn btn-primary" id="goT">🔧 공구 고르기</button>' +
     '<button class="btn" id="goO">🧩 조립 순서</button>' +
-    '<button class="btn" id="goS">🔣 기호 고르기</button>' +
-    '<button class="btn" id="goP">✏️ 연습 '+CFG.practiceN+'문항</button></div>'));
+    '<button class="btn" id="goG">📏 눈금 읽기</button>' +
+    '<button class="btn" id="goP">✏️ 연습 '+CFG.practiceN+'문항</button>' +
+    '<button class="btn" id="goS">🔣 기호 고르기</button></div>'));
   $('#goG').onclick=()=>go('gauge'); $('#goT').onclick=()=>go('tool');
   $('#goO').onclick=()=>go('order'); $('#goS').onclick=()=>go('sym');
   $('#goP').onclick=()=>go('practice');
@@ -2515,7 +2515,7 @@ function renderWrong(v){
 
 $('#hdSub').textContent = '개념 ' + LEARN.length + ' · 문항 ' + QUESTIONS.length +
                           ' · 기호 ' + Object.keys(SYM).length +
-                          ' · 게임 4종 (눈금 읽기 · 공구 고르기 · 조립 순서 · 기호 고르기)';
+                          ' · 게임 4종 (공구 고르기 · 조립 순서 · 눈금 읽기 · 기호 고르기)';
 render('learn');
 </script>
 
